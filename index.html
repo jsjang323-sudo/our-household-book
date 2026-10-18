@@ -1,0 +1,97 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>우리집 가계부</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: #f6f8f7;
+      color: #25352f;
+      font-family: Arial, sans-serif;
+    }
+    header {
+      background: white;
+      padding: 24px;
+      border-bottom: 1px solid #e5ebe7;
+    }
+    main {
+      max-width: 900px;
+      margin: auto;
+      padding: 24px 16px;
+    }
+    h1 { margin: 0; font-size: 25px; }
+    .sub { color: #78877e; font-size: 13px; }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin: 24px 0;
+    }
+    .card, .panel {
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      border: 1px solid #e7ece8;
+    }
+    .card p { color: #78877e; font-size: 13px; }
+    .card strong { font-size: 22px; }
+    .panel { margin-top: 16px; }
+    .tag {
+      display: inline-block;
+      background: #e7f2ec;
+      color: #317454;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+    }
+    @media(max-width: 500px) {
+      .card { padding: 14px; }
+      .card strong { font-size: 17px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>우리집 가계부</h1>
+    <p class="sub">우리 가족의 똑똑한 돈 관리</p>
+  </header>
+  <main>
+    <span class="tag">2026년 10월 · 데모 화면</span>
+    <section class="cards">
+      <div class="card">
+        <p>이번 달 수입</p>
+        <strong>5,000,000원</strong>
+      </div>
+      <div class="card">
+        <p>이번 달 지출</p>
+        <strong>3,200,000원</strong>
+      </div>
+      <div class="card">
+        <p>수입 - 지출</p>
+        <strong>1,800,000원</strong>
+      </div>
+      <div class="card">
+        <p>이번 달 저축</p>
+        <strong>1,000,000원</strong>
+      </div>
+    </section>
+    <section class="panel">
+      <h3>최근 지출 내역</h3>
+      <p>장보기 · 85,000원</p>
+      <p>식비 · 24,000원</p>
+      <p>관리비 · 180,000원</p>
+    </section>
+    <section class="panel">
+      <h3>앞으로 추가할 기능</h3>
+      <p>수입·지출 직접 입력</p>
+      <p>카드별 지출 통계</p>
+      <p>저축·자산 관리</p>
+      <p>부부 공동 로그인 및 암호화 저장</p>
+    </section>
+  </main>
+</body>
+</html>
