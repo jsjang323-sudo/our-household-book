@@ -1,97 +1,177 @@
 
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>우리집 가계부</title>
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      background: #f6f8f7;
-      color: #25352f;
-      font-family: Arial, sans-serif;
-    }
-    header {
-      background: white;
-      padding: 24px;
-      border-bottom: 1px solid #e5ebe7;
-    }
-    main {
-      max-width: 900px;
-      margin: auto;
-      padding: 24px 16px;
-    }
-    h1 { margin: 0; font-size: 25px; }
-    .sub { color: #78877e; font-size: 13px; }
-    .cards {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-      margin: 24px 0;
-    }
-    .card, .panel {
-      background: white;
-      border-radius: 16px;
-      padding: 20px;
-      border: 1px solid #e7ece8;
-    }
-    .card p { color: #78877e; font-size: 13px; }
-    .card strong { font-size: 22px; }
-    .panel { margin-top: 16px; }
-    .tag {
-      display: inline-block;
-      background: #e7f2ec;
-      color: #317454;
-      padding: 8px 12px;
-      border-radius: 8px;
-      font-size: 13px;
-    }
-    @media(max-width: 500px) {
-      .card { padding: 14px; }
-      .card strong { font-size: 17px; }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>우리집 가계부</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f6f8f7;color:#26372e;font-family:Arial,sans-serif}
+header{background:white;padding:22px;border-bottom:1px solid #e5eae7}
+main{max-width:850px;margin:auto;padding:20px 15px}
+h1{font-size:24px;margin:0}
+h2{font-size:18px}
+small{color:#718178}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.card,.panel{background:white;border:1px solid #e5ebe7;border-radius:15px;padding:17px;margin-bottom:13px}
+.card p{font-size:13px;color:#718178}
+.card strong{font-size:20px;overflow-wrap:anywhere}
+label{display:block;font-size:13px;margin:13px 0 5px}
+input,select,button{font:inherit;width:100%;padding:12px;border-radius:9px}
+input,select{border:1px solid #d5ded8;background:white}
+button{background:#39795a;color:white;border:0;margin-top:16px;cursor:pointer}
+button:disabled{opacity:.5}
+.item{display:flex;justify-content:space-between;align-items:center;gap:10px;border-bottom:1px solid #eee;padding:13px 0}
+.item:last-child{border:0}
+.item small{display:block;margin-top:5px}
+.delete{width:auto;background:#f4eeee;color:#9c4444;padding:8px;margin:0}
+.note{background:#e9f2ec;padding:12px;border-radius:9px;font-size:12px}
+@media(max-width:500px){.card strong{font-size:16px}}
+</style>
 </head>
 <body>
-  <header>
-    <h1>우리집 가계부</h1>
-    <p class="sub">우리 가족의 똑똑한 돈 관리</p>
-  </header>
-  <main>
-    <span class="tag">2026년 10월 · 데모 화면</span>
-    <section class="cards">
-      <div class="card">
-        <p>이번 달 수입</p>
-        <strong>5,000,000원</strong>
-      </div>
-      <div class="card">
-        <p>이번 달 지출</p>
-        <strong>3,200,000원</strong>
-      </div>
-      <div class="card">
-        <p>수입 - 지출</p>
-        <strong>1,800,000원</strong>
-      </div>
-      <div class="card">
-        <p>이번 달 저축</p>
-        <strong>1,000,000원</strong>
-      </div>
-    </section>
-    <section class="panel">
-      <h3>최근 지출 내역</h3>
-      <p>장보기 · 85,000원</p>
-      <p>식비 · 24,000원</p>
-      <p>관리비 · 180,000원</p>
-    </section>
-    <section class="panel">
-      <h3>앞으로 추가할 기능</h3>
-      <p>수입·지출 직접 입력</p>
-      <p>카드별 지출 통계</p>
-      <p>저축·자산 관리</p>
-      <p>부부 공동 로그인 및 암호화 저장</p>
-    </section>
-  </main>
+<header>
+<h1>우리집 가계부</h1>
+<small>부부 공동 가계부 · 로컬 테스트</small>
+</header>
+<main>
+<p class="note">
+테스트 버전입니다. 데이터는 현재 브라우저에만 저장됩니다.
+실제 금융정보 대신 가상 금액으로 테스트하세요.
+</p>
+<div class="grid">
+<div class="card"><p>총 수입</p><strong id="income">0원</strong></div>
+<div class="card"><p>총 지출</p><strong id="expense">0원</strong></div>
+<div class="card"><p>수입 - 지출</p><strong id="balance">0원</strong></div>
+<div class="card"><p>등록 건수</p><strong id="count">0건</strong></div>
+</div>
+<section class="panel">
+<h2>새 내역 입력</h2>
+<form id="entryForm">
+<label for="type">구분</label>
+<select id="type">
+<option value="expense">지출</option>
+<option value="income">수입</option>
+</select>
+<label for="date">날짜</label>
+<input id="date" type="date" required>
+<label for="amount">금액 (원)</label>
+<input id="amount" type="number" min="1" step="1" required>
+<label for="category">카테고리</label>
+<select id="category"></select>
+<label for="method">결제수단 / 입금 구분</label>
+<select id="method">
+<option>카드 A</option>
+<option>카드 B</option>
+<option>현금</option>
+<option>계좌</option>
+</select>
+<label for="memo">메모 (선택)</label>
+<input id="memo" maxlength="100" placeholder="예: 장보기">
+<button type="submit">내역 저장</button>
+</form>
+</section>
+<section class="panel">
+<h2>입력 내역</h2>
+<div id="list"></div>
+</section>
+</main>
+<script>
+"use strict";
+const KEY="household-demo-v1";
+const categories={
+ expense:["식비","장보기","주거·관리비","육아","교통","의료","쇼핑","기타"],
+ income:["급여","부수입","기타 수입"]
+};
+const $=id=>document.getElementById(id);
+const won=n=>n.toLocaleString("ko-KR")+"원";
+let entries=[];
+try{
+ const saved=JSON.parse(localStorage.getItem(KEY)||"[]");
+ if(Array.isArray(saved)) entries=saved;
+}catch(e){alert("저장된 테스트 데이터를 읽지 못했습니다.");}
+function updateCategories(){
+ const c=$("category");
+ c.replaceChildren();
+ for(const name of categories[$("type").value]){
+  const o=document.createElement("option");
+  o.value=name;o.textContent=name;c.append(o);
+ }
+}
+function render(){
+ let income=0,expense=0;
+ const list=$("list");
+ list.replaceChildren();
+ for(const e of entries){
+  if(e.type==="income")income+=e.amount;
+  else expense+=e.amount;
+  const row=document.createElement("div");
+  row.className="item";
+  const info=document.createElement("div");
+  const title=document.createElement("strong");
+  title.textContent=e.memo||e.category;
+  const sub=document.createElement("small");
+  sub.textContent=e.date+" · "+e.category+" · "+e.method;
+  info.append(title,sub);
+  const value=document.createElement("span");
+  value.textContent=(e.type==="income"?"+":"-")+won(e.amount);
+  const del=document.createElement("button");
+  del.className="delete";del.textContent="삭제";
+  del.setAttribute("aria-label","내역 삭제");
+  del.onclick=()=>{
+   if(!confirm("이 내역을 삭제할까요?"))return;
+   const next=entries.filter(x=>x.id!==e.id);
+   if(save(next))entries=next;
+  };
+  row.append(info,value,del);
+  list.append(row);
+ }
+ $("income").textContent=won(income);
+ $("expense").textContent=won(expense);
+ $("balance").textContent=won(income-expense);
+ $("count").textContent=entries.length+"건";
+ if(entries.length===0)list.textContent="아직 입력된 내역이 없습니다.";
+}
+function save(next){
+ try{
+  localStorage.setItem(KEY,JSON.stringify(next));
+  renderAfterSave(next);
+  return true;
+ }catch(e){
+  alert("브라우저 저장에 실패했습니다. 저장 공간 또는 설정을 확인하세요.");
+  return false;
+ }
+}
+function renderAfterSave(next){
+ entries=next;
+ render();
+}
+$("type").addEventListener("change",updateCategories);
+$("date").value=new Date().toLocaleDateString("sv-SE");
+$("entryForm").addEventListener("submit",event=>{
+ event.preventDefault();
+ const amount=Number($("amount").value);
+ if(!Number.isSafeInteger(amount)||amount<=0){
+  alert("올바른 금액을 입력하세요.");return;
+ }
+ const entry={
+  id:crypto.randomUUID(),
+  type:$("type").value,
+  date:$("date").value,
+  amount,
+  category:$("category").value,
+  method:$("method").value,
+  memo:$("memo").value.trim()
+ };
+ if(save([entry,...entries])){
+  $("amount").value="";
+  $("memo").value="";
+ }
+});
+updateCategories();
+render();
+</script>
 </body>
 </html>
