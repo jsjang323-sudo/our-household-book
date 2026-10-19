@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>우리집 가계부 | 로그인 테스트</title>
+<style>
+:root{font-family:system-ui,-apple-system,'Malgun Gothic',sans-serif;color:#273341;background:#f4f6f9}*{box-sizing:border-box}body{margin:0;padding:36px 16px}.panel{max-width:470px;margin:auto;background:white;border:1px solid #dfe5ed;border-radius:18px;padding:28px;box-shadow:0 12px 30px #24304710}h1{font-size:23px;margin:0 0 8px}p{line-height:1.6;color:#64748b;font-size:14px}.hint{background:#f0f5ff;padding:12px;border-radius:9px;margin:18px 0}label{display:block;font-weight:650;font-size:14px;margin:15px 0 7px}input{width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:9px;font:inherit}button{width:100%;margin-top:17px;padding:12px;border:0;border-radius:9px;background:#334155;color:#fff;font:inherit;font-weight:650;cursor:pointer}button:disabled{opacity:.6;cursor:wait}.secondary{background:#e2e8f0;color:#334155}#status{margin-top:17px;padding:12px;background:#f8fafc;border-radius:9px;white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px}#signedIn{display:none}small{color:#64748b;display:block;margin-top:18px;line-height:1.5}code{font-size:12px}
+</style>
+</head><body><main class="panel">
+<h1>우리집 가계부</h1><p>11-8단계 · Firebase 로그인 테스트 전용 페이지</p>
+<div class="hint">기존 가계부 데이터는 읽거나 변경하지 않습니다. 로그인 상태만 확인합니다.</div>
+<div id="signedOut"><form id="loginForm"><label for="email">이메일</label><input id="email" type="email" autocomplete="username" required><label for="password">비밀번호</label><input id="password" type="password" autocomplete="current-password" required><button id="loginButton" type="submit">로그인 테스트</button></form></div>
+<div id="signedIn"><p>로그인 계정: <strong id="signedEmail"></strong></p><p>Firebase 인증: <strong>성공</strong></p><button class="secondary" id="logoutButton" type="button">로그아웃</button></div>
+<div id="status" role="status" aria-live="polite">Firebase 초기화 대기 중...</div>
+<small>이 페이지에는 회원가입·가계부 조회·데이터 쓰기 기능이 없습니다. Firebase 로그인 비밀번호를 GitHub나 채팅에 올리지 마세요.</small>
+</main>
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js';
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, setPersistence, browserSessionPersistence } from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js';
+
+// Firebase 콘솔 > 프로젝트 설정 > 내 앱 > SDK 설정 및 구성 > 구성에서
+// 아래 여섯 값만 자신의 웹 앱 설정값으로 교체하세요.
+// Firebase 웹 앱 설정값은 클라이언트 공개용 구성입니다. 관리자 비밀키는 절대 넣지 마세요.
+const firebaseConfig = {
+  apiKey: "AIzaSyC2Xs845c0Sjq883TyJyaqP1kBhQIQ3fes",
+  authDomain: "our-household-book.firebaseapp.com",
+  projectId: "our-household-book",
+  storageBucket: "our-household-book.firebasestorage.app",
+  messagingSenderId: "475152438383",
+  appId: "1:475152438383:web:e64fa2d54bc6024500299a"
+};
+
+const $ = id => document.getElementById(id);
+const status = message => { $('status').textContent = message; };
+const form = $('loginForm');
+const loginButton = $('loginButton');
+
+try {
+  if (Object.values(firebaseConfig).some(value => String(value).startsWith('여기에_'))) {
+    throw new Error('firebaseConfig의 여섯 값을 실제 웹 앱 설정값으로 교체해야 합니다.');
+  }
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  // 탭/브라우저 세션 단위 로그인 유지. 브라우저를 닫으면 재로그인이 필요할 수 있습니다.
+  await setPersistence(auth, browserSessionPersistence);
+  onAuthStateChanged(auth, user => {
+    $('password').value = '';
+    $('signedOut').style.display = user ? 'none' : 'block';
+    $('signedIn').style.display = user ? 'block' : 'none';
+    $('signedEmail').textContent = user?.email ?? '';
+    status(user ? 'Firebase 인증 성공. 이 페이지는 Firestore 접근을 테스트하지 않습니다.' : '로그아웃 상태입니다. Firebase에 등록한 계정으로 로그인해 보세요.');
+  }, error => status('인증 상태 확인 오류: ' + error.code));
+  form.addEventListener('submit', async event => {
+    event.preventDefault();
+    loginButton.disabled = true;
+    status('로그인 요청 중...');
+    try {
+      await signInWithEmailAndPassword(auth, $('email').value.trim(), $('password').value);
+    } catch (error) {
+      const code = error?.code || 'unknown';
+      status('로그인 실패 (' + code + '). 이메일·비밀번호 또는 Firebase 설정을 확인하세요.');
+      $('password').value = '';
+    } finally { loginButton.disabled = false; }
+  });
+  $('logoutButton').addEventListener('click', async () => {
+    try { await signOut(auth); status('로그아웃되었습니다.'); }
+    catch (error) { status('로그아웃 실패: ' + error.code); }
+  });
+} catch (error) {
+  status('초기화 오류: ' + (error?.message || String(error)));
+  loginButton.disabled = true;
+}
+</script>
+</body></html>
